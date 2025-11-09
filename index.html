@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل IPTV تيليجرام</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- تضمين سكريبت Telegram Web App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <header>
+        <h1>مشغل قنوات IPTV</h1>
+        <p>اختر قناة من القائمة أدناه</p>
+    </header>
+
+    <main>
+        <!-- حاوية مشغل الفيديو -->
+        <div id="video-container" style="display: none;">
+            <video id="video-player" class="video-js vjs-default-skin" controls preload="auto" width="100%"></video>
+            <p id="current-channel-name"></p>
+        </div>
+
+        <!-- قائمة القنوات -->
+        <div id="channel-list-container">
+            <input type="text" id="search-bar" placeholder="ابحث عن قناة...">
+            <ul id="channel-list">
+                <!-- سيتم ملء هذه القائمة بواسطة JavaScript -->
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>تطبيق مصغر بواسطة Manus</p>
+    </footer>
+
+    <!-- تضمين مكتبات تشغيل الفيديو -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
