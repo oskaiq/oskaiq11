@@ -1,44 +1,89 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشغل IPTV تيليجرام</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- تضمين سكريبت Telegram Web App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مشغل IPTV تيليجرام</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- مكتبة Shaka Player -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.10.10/shaka-player.compiled.js"></script>
 </head>
 <body>
-    <header>
-        <h1>مشغل قنوات IPTV</h1>
-        <p>اختر قناة من القائمة أدناه</p>
-    </header>
+  <header>
+    <h1>مشغل قنوات IPTV</h1>
+    <p>اختر قناة من القائمة أدناه</p>
+  </header>
 
-    <main>
-        <!-- حاوية مشغل الفيديو -->
-        <div id="video-container" style="display: none;">
-            <video id="video-player" class="video-js vjs-default-skin" controls preload="auto" width="100%"></video>
-            <p id="current-channel-name"></p>
-        </div>
+  <main>
+    <!-- حاوية مشغل الفيديو -->
+    <div id="video-container" style="display: none;">
+      <video id="video-player" width="100%" controls autoplay></video>
+      <p id="current-channel-name"></p>
+    </div>
 
-        <!-- قائمة القنوات -->
-        <div id="channel-list-container">
-            <input type="text" id="search-bar" placeholder="ابحث عن قناة...">
-            <ul id="channel-list">
-                <!-- سيتم ملء هذه القائمة بواسطة JavaScript -->
-            </ul>
-        </div>
-    </main>
+    <!-- قائمة القنوات -->
+    <div id="channel-list-container">
+      <input type="text" id="search-bar" placeholder="ابحث عن قناة...">
+      <ul id="channel-list">
+        <!-- سيتم ملء هذه القائمة بواسطة JavaScript -->
+      </ul>
+    </div>
+  </main>
 
-    <footer>
-        <p>تطبيق مصغر بواسطة Manus</p>
-    </footer>
+  <footer>
+    <p>تطبيق مصغر بواسطة Manus</p>
+  </footer>
 
-    <!-- تضمين مكتبات تشغيل الفيديو -->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    // إعداد مشغل Shaka Player
+    document.addEventListener('DOMContentLoaded', async () => {
+      const video = document.getElementById('video-player');
+      const videoContainer = document.getElementById('video-container');
+      const channelList = document.getElementById('channel-list');
+      const currentChannel = document.getElementById('current-channel-name');
+      const searchBar = document.getElementById('search-bar');
 
-    <script src="script.js"></script>
+      // قائمة القنوات
+      const channels = [
+        { name: 'قناة Bein Sports 1', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+        { name: 'قناة Bein Sports 2', url: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8' },
+        { name: 'قناة العراق', url: 'https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8' }
+      ];
+
+      // عرض القنوات
+      function renderList(filter = '') {
+        channelList.innerHTML = '';
+        channels
+          .filter(c => c.name.includes(filter))
+          .forEach(ch => {
+            const li = document.createElement('li');
+            li.textContent = ch.name;
+            li.style.cursor = 'pointer';
+            li.onclick = () => playChannel(ch);
+            channelList.appendChild(li);
+          });
+      }
+
+      renderList();
+
+      searchBar.addEventListener('input', e => renderList(e.target.value));
+
+      // تشغيل القناة
+      async function playChannel(channel) {
+        try {
+          videoContainer.style.display = 'block';
+          currentChannel.textContent = channel.name;
+
+          const player = new shaka.Player(video);
+          await player.load(channel.url);
+          video.play();
+        } catch (err) {
+          alert('حدث خطأ أثناء تحميل القناة: ' + err);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
