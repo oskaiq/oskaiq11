@@ -12,8 +12,7 @@ const m3uContent = `
 #EXTM3U
 
 #EXTINF:-1,beIN SPORTS Full HD 1
-http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/3221
-#EXTINF:-1,beIN SPORTS Full HD 2
+http://front-main.eagle-4k.me:80/live/9fshhuw2z7/54hw7lwwb1/196816.m3u8#EXTINF:-1,beIN SPORTS Full HD 2
 http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/3222
 #EXTINF:-1,beIN SPORTS Full HD 3
 http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/3224
