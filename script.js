@@ -14,89 +14,55 @@
         padding: 0;
         direction: rtl;
     }
-
     header {
         background: #161b22;
-        padding: 12px;
+        padding: 10px;
         text-align: center;
         font-size: 20px;
         font-weight: bold;
     }
-
-    #controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        background: #1b1f24;
-    }
-
-    select, button, input {
-        background: #222831;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 10px;
-        font-size: 14px;
-        margin: 0 5px;
-    }
-
-    button:hover, select:hover {
-        background: #238636;
-        cursor: pointer;
-    }
-
     #search-bar {
-        flex: 1;
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        display: block;
+        font-size: 16px;
     }
-
     #channel-list {
         list-style: none;
-        padding: 10px;
+        padding: 0;
         margin: 0;
-        display: grid;
-        gap: 8px;
-        grid-template-columns: 1fr;
-        transition: all 0.3s;
-    }
-
-    #channel-list.grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    }
-
-    #channel-list li {
-        padding: 10px;
-        border: 1px solid #222;
-        border-radius: 10px;
-        text-align: center;
+        max-height: 300px;
+        overflow-y: auto;
         background: #161b22;
-        cursor: pointer;
-        transition: 0.3s;
+        border-top: 1px solid #222;
     }
-
+    #channel-list li {
+        padding: 12px;
+        border-bottom: 1px solid #222;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
     #channel-list li:hover {
         background: #1e232a;
-        transform: scale(1.02);
     }
-
     #channel-list li.active {
         background: #238636;
-        border-color: #2ea043;
     }
-
     #video-container {
         display: none;
-        text-align: center;
         margin-top: 10px;
+        text-align: center;
     }
-
     video {
         width: 95%;
         max-width: 800px;
+        height: auto;
         border-radius: 10px;
         box-shadow: 0 0 10px #000;
     }
-
     #current-channel-name {
         margin: 10px 0;
         font-weight: bold;
@@ -107,18 +73,7 @@
 
 <header>🎥 مشغل قنوات M3U</header>
 
-<div id="controls">
-    <select id="category-filter">
-        <option value="all">📺 كل القنوات</option>
-        <option value="bein">⚽ beIN SPORTS</option>
-        <option value="movies">🎬 أفلام</option>
-        <option value="kids">🧸 أطفال</option>
-        <option value="news">📰 أخبار</option>
-    </select>
-
-    <input type="text" id="search-bar" placeholder="🔍 ابحث عن قناة...">
-    <button id="toggle-view">🗂️ عرض الشبكة</button>
-</div>
+<input type="text" id="search-bar" placeholder="🔍 ابحث عن قناة...">
 
 <ul id="channel-list"></ul>
 
@@ -128,34 +83,31 @@
 </div>
 
 <script>
-// تهيئة Telegram WebApp
+// تهيئة مكتبة Telegram Web App
 const tg = window.Telegram?.WebApp;
 if (tg) {
     tg.ready();
     tg.expand();
 }
 
-// ملف M3U مختصر (يمكنك استبداله بمحتوى أكبر)
+// محتوى ملف M3U
 const m3uContent = `#EXTM3U
-#EXTINF:-1,beIN SPORTS 1 HD
-http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/46
-#EXTINF:-1,beIN SPORTS 2 HD
-http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/47
-#EXTINF:-1,beIN MOVIES 1 HD
-http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/24
-#EXTINF:-1,beIN JUNIOR HD
-http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/2947
-#EXTINF:-1,beIN NEWS HD
-http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/2051
+#EXTINF:-1,beIN SPORTS Full HD 1
+http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/3221
+#EXTINF:-1,beIN SPORTS Full HD 2
+http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/3222
+#EXTINF:-1,beIN SPORTS Full HD 3
+http://ugeen.live:8080/Ugeen_VIP8Z9E57/jueFRN/3224
 `;
 
+// تحليل ملف M3U
 function parseM3U(content) {
     const lines = content.split('\n');
     const parsedChannels = [];
     let currentChannel = {};
 
-    for (let line of lines) {
-        line = line.trim();
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
         if (line.startsWith('#EXTINF:')) {
             const match = line.match(/,(.*)/);
             if (match && match[1]) currentChannel.name = match[1].trim();
@@ -168,27 +120,20 @@ function parseM3U(content) {
     return parsedChannels;
 }
 
-function categorizeChannel(name) {
-    name = name.toLowerCase();
-    if (name.includes('bein sports')) return 'bein';
-    if (name.includes('movie')) return 'movies';
-    if (name.includes('junior') || name.includes('cartoon') || name.includes('kids')) return 'kids';
-    if (name.includes('news')) return 'news';
-    return 'other';
-}
-
-function displayChannels(list) {
-    const container = document.getElementById('channel-list');
-    container.innerHTML = '';
-    list.forEach(ch => {
+// عرض القنوات
+function displayChannels(channelList) {
+    const listElement = document.getElementById('channel-list');
+    listElement.innerHTML = '';
+    channelList.forEach(channel => {
         const li = document.createElement('li');
-        li.textContent = ch.name;
-        li.dataset.url = ch.url;
-        li.onclick = () => playChannel(ch.name, ch.url);
-        container.appendChild(li);
+        li.textContent = channel.name;
+        li.dataset.url = channel.url;
+        li.onclick = () => playChannel(channel.name, channel.url);
+        listElement.appendChild(li);
     });
 }
 
+// تشغيل القناة
 function playChannel(name, url) {
     const videoContainer = document.getElementById('video-container');
     const video = document.getElementById('video-player');
@@ -210,6 +155,13 @@ function playChannel(name, url) {
         hls.loadSource(url);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        hls.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) {
+                console.error('HLS Error:', data);
+                video.src = url;
+                video.play().catch(err => console.error(err));
+            }
+        });
     } else {
         video.src = url;
         video.play().catch(err => console.error(err));
@@ -218,46 +170,22 @@ function playChannel(name, url) {
     tg?.postEvent?.('iframe_resize');
 }
 
-function setupFilters() {
-    const searchBar = document.getElementById('search-bar');
-    const categorySelect = document.getElementById('category-filter');
-
-    function filterChannels() {
-        const term = searchBar.value.toLowerCase();
-        const cat = categorySelect.value;
-        const filtered = channels.filter(c => {
-            const matchSearch = c.name.toLowerCase().includes(term);
-            const matchCat = cat === 'all' || c.category === cat;
-            return matchSearch && matchCat;
-        });
+// بحث مباشر
+function setupSearch() {
+    const search = document.getElementById('search-bar');
+    search.addEventListener('input', e => {
+        const term = e.target.value.toLowerCase();
+        const filtered = channels.filter(c => c.name.toLowerCase().includes(term));
         displayChannels(filtered);
-    }
-
-    searchBar.addEventListener('input', filterChannels);
-    categorySelect.addEventListener('change', filterChannels);
+    });
 }
 
-function setupViewToggle() {
-    const btn = document.getElementById('toggle-view');
-    const list = document.getElementById('channel-list');
-    let gridMode = false;
-
-    btn.onclick = () => {
-        gridMode = !gridMode;
-        list.classList.toggle('grid', gridMode);
-        btn.textContent = gridMode ? '📋 عرض القائمة' : '🗂️ عرض الشبكة';
-    };
-}
-
+// بدء التطبيق
 let channels = [];
 document.addEventListener('DOMContentLoaded', () => {
-    channels = parseM3U(m3uContent).map(c => ({
-        ...c,
-        category: categorizeChannel(c.name)
-    }));
+    channels = parseM3U(m3uContent);
     displayChannels(channels);
-    setupFilters();
-    setupViewToggle();
+    setupSearch();
 });
 </script>
 
